@@ -1,0 +1,7 @@
+_site/
+.jekyll-cache/
+_data_in/
+_pattern_maps/
+pattern-atlas-downloads/
+atlas-data/
+_data/pattern_*.csv

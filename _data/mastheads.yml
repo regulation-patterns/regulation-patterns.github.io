@@ -1,0 +1,9 @@
+# The top bar of the pattern pages (front matter masthead: patterns; the layout reads it): no logo, the site's name, a
+# menu of Pattern Atlas then Pattern List (user, 2026-10-30).
+patterns:
+  name: "Regulation Patterns"
+  description: "Recurring patterns in cell signalling and metabolic regulation"
+  home: "/pattern-list/"
+  nav:
+    - {label: "Pattern Atlas", url: "/pattern-atlas/"}
+    - {label: "Pattern List", url: "/pattern-list/"}
