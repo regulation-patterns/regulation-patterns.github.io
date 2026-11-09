@@ -9,5 +9,10 @@ icon: favicon-patterns
 ---
 <style>
 {% include default-lines.css %}
+/* the top bar as on the styles page (presentation mode, user 2026-11-10): no room under it, as wide as the viewer, the
+   name on the list's left edge, the menu on the right */
+html .wrapper-masthead { margin-bottom: 0; }
+html .wrapper-masthead .container { max-width: none; padding: 0; }
+@media (max-width: 940px) { html .wrapper-masthead .container { width: auto; padding: 0 16px; } }
 </style>
 {% include atlas-app.html index="/pattern-atlas/index.json" search="/atlas-data/pattern-search.json" name="Pattern Atlas" look="version1" %}
