@@ -7,4 +7,7 @@ noindex: true
 masthead: patterns
 icon: favicon-patterns
 ---
-{% include atlas-app.html index="/pattern-atlas/index.json" search="/atlas-data/pattern-search.json" name="Pattern Atlas" %}
+<style>
+{% include default-lines.css %}
+</style>
+{% include atlas-app.html index="/pattern-atlas/index.json" search="/atlas-data/pattern-search.json" name="Pattern Atlas" look="version1" %}

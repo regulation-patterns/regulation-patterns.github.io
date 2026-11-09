@@ -4,6 +4,7 @@ patterns:
   name: "Regulation Patterns"
   description: "Recurring patterns in cell signalling and metabolic regulation"
   home: "/pattern-list/"
+  plain: true   # the page shown in the menu not in bold (user, 2026-11-10)
   nav:
     - {label: "Pattern Atlas", url: "/pattern-atlas/"}
     - {label: "Pattern List", url: "/pattern-list/"}

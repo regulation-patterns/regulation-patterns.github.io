@@ -11,9 +11,13 @@ private repository whose copy script writes them into the data; change them ther
 
 Names: this repository is public and names no private repository, in files, pages, code comments or commit messages.
 
-- The viewer (`_includes/atlas-app.html`, `atlas-tags.css`) and the layouts and styles are copies of the Metabolism
-  Regulation website's (2026-11-08); a change made there is copied here, until the viewer has one source.
-- One top bar (`_data/mastheads.yml`, `masthead: patterns`): no logo, the site's name, Pattern Atlas then Pattern List.
+- The viewer (`_includes/atlas-app.html`, `atlas-tags.css`) is a copy of the viewer's one source (since 2026-11-10,
+  user; `_includes/VERSION` names its commit), taken again only when the user asks. The Pattern Atlas has the look
+  Default Lines of the viewer's styles page in presentation mode, top bar kept (user, 2026-11-10):
+  `_includes/default-lines.css`, a copy of that style, included before the viewer, which gets `look="version1"` (the
+  base the style was made on). The layouts and styles are copies of the Metabolism Regulation website's (2026-11-08).
+- One top bar (`_data/mastheads.yml`, `masthead: patterns`): no logo, the site's name, Pattern Atlas then Pattern List;
+  the page shown not in bold (`plain: true`, user 2026-11-10).
 - The page text of the Pattern List is edited here (`pages/pattern-list.md`).
 - After the data change, the workflow is started by hand or by the session that pushed them; a push here starts it too.
 - A change counts only when it is live, checked on the site itself.
