@@ -9,6 +9,7 @@ osteoarthritis working site, user 2026-11-05), and groups and the maps in a grou
 kept in that browser.
 The look (user, 2026-11-09): Default Next of the styles experiment, the block after the main rules; look="version1"
 leaves it out and gives the look before that day (the styles page, so its styles keep the base they were made on).
+look="panel" (user, 2026-11-10): Default Panel of the styles experiment, its own block, in place of Default Next's.
 {% endcomment %}
 
 {% if include.mode == "development" %}<style>
@@ -46,6 +47,8 @@ leaves it out and gives the look before that day (the styles page, so its styles
     --m2-separators: 1;
     --m2-click-closes: 1;
     --m2-drag-shift: 1;
+    --m2-menu: 0;                /* Search and Downloads as two rows at the top of the list in place of the search field and
+                                    the download buttons (user, 2026-11-10, as in Claude's app): off, a style turns it on */
     --m2-separator-below: 0;     /* the separator under the map window (its height): off for now (user, 2026-11-09: to think about) */
     --m2-split: 32px;            /* the gap between the list and the map: its separator can be dragged */
     --m2-split-h: 14px;          /* the gap under the map window, down to the download buttons: its separator too */
@@ -77,8 +80,7 @@ leaves it out and gives the look before that day (the styles page, so its styles
   #m2-view:fullscreen + #m2-split-h, #m2-view:-webkit-full-screen + #m2-split-h { display: none; }
   body.m2-splitting-h, body.m2-splitting-h * { cursor: row-resize !important; user-select: none; }
   .m2-list-shut .m2-nav { display: none; }
-  .m2-below-shut #m2-downloads, .m2-below-shut #m2-title, .m2-below-shut #m2-text { display: none; }   /* the map to the bottom edge */
-  .m2-below-shut #m2-view { max-height: none; }
+  .m2-below #m2-view { max-height: calc(200vh / var(--zoom, 1)); }   /* dragged taller than the window, up to twice its height; nothing under it is hidden (user, 2026-11-11) */
   /* the separators only with --m2-separators: 1 (the class m2-seps); then no grip in the map window's corner */
   .m2:not(.m2-seps) #m2-split, .m2:not(.m2-seps) #m2-split-h, .m2:not(.m2-below) #m2-split-h { display: none; }
   .m2-seps #m2-view { resize: none; }
@@ -121,6 +123,32 @@ leaves it out and gives the look before that day (the styles page, so its styles
   #m2-search::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; width: 12px; height: 12px; cursor: pointer;
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2 2l10 10M12 2L2 12' fill='none' stroke='%23b4b4b4' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center / 12px; }
   #m2-list { display: flex; flex-direction: column; gap: 2px; }
+  /* --m2-menu: 1 (user, 2026-11-10, as in Claude's app): at the top of the list two rows, Search with a magnifying glass
+     and Downloads with the download sign, in place of the search field and the download buttons, so the room under the
+     map goes to the map. Search shows the search field under the rows (a click again empties and hides it), Downloads
+     opens a menu of what the map offers. Rows filled in the accent under the pointer and while open, as the buttons. */
+  #m2-menu { display: none; margin-bottom: 8px; }
+  .m2-menu-on #m2-menu { display: block; }
+  .m2-menu-on #m2-downloads { display: none; }
+  .m2-menu-on #m2-view { max-height: calc(200vh / var(--zoom, 1)); }   /* dragged taller than the window, up to twice its height */
+  .m2-menu-on .m2-nav:not(.m2-search-open) #m2-search { display: none; }
+  /* Search opens in its own place (user, 2026-11-10: "right in place of search, not below"): the row gives way to the
+     field, which keeps the magnifying glass at the row's place; emptied and left, it turns back into the row */
+  .m2-search-open #m2-menu-search { display: none; }
+  .m2-menu-on #m2-search { margin: 0 0 2px; padding-left: 30px; background-repeat: no-repeat; background-position: 6px center; background-size: 16px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5L21 21'/%3E%3C/svg%3E"); }
+  .m2-mi { display: flex; align-items: center; gap: 9px; width: 100%; box-sizing: border-box; font: inherit; font-size: 14px; line-height: 20px; padding: 3px 4px; margin: 0 0 2px; border: 0; border-radius: var(--m2-radius); background: none; color: var(--m2-text); cursor: pointer; text-align: left; }
+  .m2-mi svg { width: 17px; height: 17px; flex: none; }
+  .m2-mi:hover, .m2-mi.m2-open { background: var(--m2-accent); color: var(--m2-on-accent); }
+  .m2-mi:focus { outline: none; }
+  #m2-menu-dl { position: relative; }
+  #m2-menu-list { display: none; position: absolute; z-index: 6; left: 0; right: 0; top: 28px; background: var(--m2-bg); border: 1px solid var(--m2-line); border-radius: var(--m2-radius-button); box-shadow: 0 2px 8px rgba(0, 0, 0, .12); padding: 4px 0; }
+  #m2-menu-dl.m2-open #m2-menu-list { display: block; }
+  #m2-menu-list a { display: flex; align-items: center; justify-content: space-between; font-size: 14px; line-height: 20px; padding: 4px 12px; color: var(--m2-text); text-decoration: none; }
+  #m2-menu-list a:hover { background: var(--m2-accent); color: var(--m2-on-accent); }
+  #m2-menu-list a svg { width: 13px; height: 13px; margin-left: 8px; flex: none; }
+  #m2-menu-list a.m2-bad { color: var(--m2-error); cursor: help; }
+  #m2-menu-list .m2-sep { border-top: 1px solid var(--m2-line); margin: 4px 0; }
   .m2-item { display: block; width: 100%; text-align: left; font-size: 14px; line-height: 18px; padding: 2px 4px; border: 1px solid transparent; border-radius: var(--m2-radius); background: none; cursor: pointer; color: var(--m2-text); }
   /* the chosen map: a filled box in the site's link blue, white text */
   /* under the pointer: --m2-hover (none since 2026-11-09; was a very light grey) */
@@ -276,7 +304,7 @@ leaves it out and gives the look before that day (the styles page, so its styles
   .m2-chip.m2-on { background: var(--m2-accent); border-color: var(--m2-accent); color: var(--m2-on-accent); } /* as the chosen map in the list */
   .m2-chip:focus, .m2-card:focus { outline: none; }
 </style>
-{% unless include.look == "version1" %}<style>
+{% unless include.look == "version1" or include.look == "panel" %}<style>
 /* The viewer's look since 2026-11-09 (user): Default Next of the styles experiment, made the default. Until then the
    viewer's look was the rules above alone (Default Version 1 on the styles page, which passes look="version1").
    No dots on any separator since (user, 2026-11-09: knowing the areas can be dragged is enough, the dots are noisy);
@@ -335,9 +363,113 @@ html .m2-ctrl button:hover { background: var(--m2-accent); border-color: var(--m
     mask-image: linear-gradient(to bottom, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%); }
 }
 </style>{% endunless %}
+{% if include.look == "panel" %}<style>
+/* look="panel" (user, 2026-11-10): Default Panel of the styles experiment (Default in its picker), the newest default:
+   MINERVA's thin lines, no frame round the map, the panel's column on the right always there. Built on the rules
+   above alone, as on the styles page (version1 base); copied from the styles experiment's default-lines-base.css and
+   default-panel-base.css, the style picker's rules left out. */
+/* Default Lines (user, 2026-11-09): Default Next with MINERVA's separators. The map has no frame and no gaps around
+   it, so it no longer floats in the middle of nowhere: it runs from the list to the panel (or to the window's right
+   edge while no panel is open), and one thin line joins each pair of neighbours, under the top bar, between the list
+   and the map, between the map and the panel. Colours, fonts and the list and panel staying in sight as in Default
+   Next, as it was copied on 2026-11-09. */
+:root {
+  --m2-grip: #b4b4b4;   /* the three dots on the separators: the soft grey of the group chevrons (user) */
+  --m2-grip-t: transparent;   /* no dots above the map (user, 2026-11-09), the separator still works */
+  --m2-grip-h: #b4b4b4; /* and under the map window (user, 2026-11-09) */
+  --m2-separator-below: 1; /* that separator on: dragged up the map gets smaller, dragged down past the buttons the map goes to the bottom edge */
+  --m2-split-t: 8px;
+  --m2-split: 8px;
+  --m2-split-h: 8px;
+  --m2-below-view: 46px;   /* the download buttons 8 px under the map and 8 px above the window's bottom (user) */
+}
+html .wrapper-masthead .container { width: calc(100vw / var(--zoom, 1) - 16px); }
+html .masthead { padding: 6px 0 7px 4px; }   /* the name where the list's text starts (user) */
+html #main { padding-top: 8px; }
+html .m2 { width: calc(100vw / var(--zoom, 1) - 16px); column-gap: 0; grid-template-columns: var(--m2-list-w, 240px) minmax(600px, 1fr) calc(var(--m2-info-w, 240px) + 10px); }
+/* the right column kept for the panel as in Default, empty until a molecule is chosen (user); dragged shut, it goes */
+html .m2.m2-info-shut { grid-template-columns: var(--m2-list-w, 240px) minmax(600px, 1fr) 0; }
+html .m2-main { margin-left: 8px; }
+/* the list out of sight: the map 8 px from the window's edge, as on the other sides, the separator in that strip */
+html .m2-list-shut .m2-main { margin-left: 0; }
+/* the panel 10 px from the map window, as the search field and the list on the left (user, 2026-11-09: 8 px too little, 16 px too much); the separator in the middle of that room */
+html .m2-info:not(.m2-over) { margin-left: 10px; width: var(--m2-info-w, 240px); }
+html #m2-search { margin-bottom: 8px; }   /* above the list (user, 2026-11-09: back for now, after a try in the top bar) */
+/* the list's content 12 px from the window's edge, as in MINERVA (user) */
+html .m2-nav { padding: 0 4px; box-sizing: border-box; }
+@media (max-width: 940px) { html .m2-nav { padding: 0; } }   /* narrow windows: the search and the list in line with the map (user, 2026-11-09) */
+html #m2-downloads { margin-top: 4px; }
+@media (max-width: 940px) {
+  html .m2 { width: auto; }
+  html .m2-main { margin-left: 0; }
+  html .m2-info:not(.m2-over) { margin-left: 0; width: auto; }
+}
+
+/* the separators' dots between the viewer's (1.5 px) and Reactome's (1 px) (user, 2026-11-09), 8 px apart as both */
+html #m2-split::after, html #m2-split-r::after { background: radial-gradient(circle, var(--m2-grip) 1.25px, transparent 1.6px) center / 4px 8px repeat-y; }
+html #m2-split-t::after { background: radial-gradient(circle, var(--m2-grip-t) 1.25px, transparent 1.6px) center / 8px 4px repeat-x; }
+html #m2-split-h > div::after { background: radial-gradient(circle, var(--m2-grip-h) 1.25px, transparent 1.6px) center / 8px 4px repeat-x; }
+
+/* the zoom buttons over the map filled in the accent under the pointer, white sign, as in the Reactome styles (user, 2026-11-09) */
+html .m2-ctrl button:hover { background: var(--m2-accent); border-color: var(--m2-accent); color: var(--m2-on-accent, #fff); }
+
+
+/* scrolling as in Default (user, 2026-11-09, for Default Lines on 2026-11-10): the page moves as one, the list with
+   its search, the map and the panel together; the list and the panel still scroll inside. Pinned in sight until then. */
+@media (min-width: 941px) {
+  html .m2-nav { align-self: stretch; }   /* the list's line on its right down to the end of the map column */
+}
+
+
+/* MINERVA's separators (user, 2026-11-09) */
+html .wrapper-masthead { border-bottom: 1px solid var(--m2-frame); margin-bottom: 0; }   /* the lines down the page meet this one (a site's own margin under the header left a gap, user 2026-11-10) */
+html #main { padding-top: 0; }
+html body.m2-head-shut #main { padding-top: 6px; }
+html { --m2-split-t: 6px; }
+html .m2 { width: calc(100vw / var(--zoom, 1)); column-gap: 0; grid-template-columns: var(--m2-list-w, 240px) minmax(600px, 1fr) auto; }
+html .m2.m2-info-shut { grid-template-columns: var(--m2-list-w, 240px) minmax(600px, 1fr) 0; }
+html .m2-nav { padding: 12px 12px 0; border-right: 1px solid var(--m2-frame); box-sizing: border-box; }
+html .m2-main, html .m2-list-shut .m2-main { margin-left: 0; }
+html #m2-view { border: 0; border-radius: 0; }
+html #m2-downloads, html #m2-title, html #m2-text { padding-left: 12px; padding-right: 12px; }
+html #m2-split { left: -4px; }   /* the list's separator on its line */
+/* the panel joined to the map by a line the whole height of the map column: the line belongs to the map column */
+html .m2-info:not(.m2-over) { margin-left: 0; width: var(--m2-info-w, 240px); box-sizing: border-box; padding: 12px 16px; }   /* as wide as the list by default, 240 px (user, 2026-11-09; was 300) */
+html .m2:has(.m2-info:not(.m2-over):not(:empty)):not(.m2-info-shut) .m2-main { border-right: 1px solid var(--m2-frame); }
+@media (max-width: 940px) {
+  html .m2 { width: auto; }
+  html .m2-nav { border-right: 0; padding-bottom: 12px; }
+  html .m2-info:not(.m2-over) { width: auto; }
+}
+
+/* no dots on the separators (user, 2026-11-09): the lines are grabbed and moved as they are */
+:root { --m2-grip: transparent; --m2-grip-h: transparent; --m2-grip-t: transparent; }
+
+/* the separators show nothing under the pointer (user, 2026-11-09: no highlighting, the lines are there by default);
+   with the list out of sight its separator sits inside the window, its whole 8 px to grab (it was half outside: 4 px left) */
+html .m2-list-shut #m2-split { left: 0; }
+
+/* the download buttons lower (user, 2026-11-09): 4 px above the window's bottom, not 8; with no frame round the map the
+   8 px kept no edge in line, and the map gets the 4 px */
+:root { --m2-below-view: 42px; }
+
+/* Default Panel's rules (user, 2026-11-10): Default (Default Lines) with the panel's column on the right always there,
+   240 px (as wide as the list), empty until a molecule is chosen, as in Default Version 2. Dragged shut it goes, a click
+   brings it back. Included by Default Panel and Default Panel Dark, which adds only colours. */
+/* wide windows only; narrow ones (940 px and under) stack as in Default */
+@media (min-width: 941px) {
+  html .m2 { grid-template-columns: var(--m2-list-w, 240px) minmax(600px, 1fr) var(--m2-info-w, 240px); }
+  /* the line between the map and the panel always, as the column is always there */
+  html .m2:not(.m2-info-shut) .m2-main { border-right: 1px solid var(--m2-frame); }
+}
+</style>{% endif %}
 
 <div class="m2">
 <div class="m2-nav">
+<div id="m2-menu">
+<button type="button" class="m2-mi" id="m2-menu-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>Search</button>
+<div id="m2-menu-dl"><button type="button" class="m2-mi" id="m2-menu-dl-button" aria-haspopup="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M4 15v5h16v-5"/></svg>Downloads</button><div id="m2-menu-list"></div></div>
+</div>
 <input type="search" id="m2-search" placeholder="Search" autocomplete="off">
 <div id="m2-list"></div>
 </div>
@@ -452,6 +584,59 @@ html .m2-ctrl button:hover { background: var(--m2-accent); border-color: var(--m
   var view = document.getElementById('m2-view'), img = document.getElementById('m2-img');
   var z = STANDARD, tx = 0, ty = 0;
   var moved = false; // zoomed or panned away from the mode's view
+
+  // --m2-menu: 1 (user, 2026-11-10): the Search and Downloads rows at the top of the list; the class m2-menu-on on the
+  // grid, set again on every resize (the styles page sends one after a style is chosen)
+  var menuNav = document.querySelector('.m2-nav'), menuSearch = document.getElementById('m2-search'),
+      menuDl = document.getElementById('m2-menu-dl'), menuDlButton = document.getElementById('m2-menu-dl-button'),
+      menuList = document.getElementById('m2-menu-list');
+  // with the menu the field sits between the two rows, where the Search row was; without it, above the list
+  function menuOn() {
+    var on = setting('menu');
+    document.querySelector('.m2').classList.toggle('m2-menu-on', on);
+    if (on && menuSearch.nextElementSibling !== menuDl) menuDl.parentNode.insertBefore(menuSearch, menuDl);
+    if (!on && menuSearch.parentNode !== menuNav) menuNav.insertBefore(menuSearch, document.getElementById('m2-list'));
+  }
+  menuOn();
+  window.addEventListener('resize', menuOn);
+  function menuDlOpen(on) { menuDl.classList.toggle('m2-open', on); menuDlButton.classList.toggle('m2-open', on); }
+  document.getElementById('m2-menu-search').addEventListener('click', function () {
+    menuNav.classList.add('m2-search-open');
+    menuSearch.focus();
+    window.dispatchEvent(new Event('resize'));  // the list's height
+  });
+  function searchClose() { menuNav.classList.remove('m2-search-open'); window.dispatchEvent(new Event('resize')); }
+  menuSearch.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && setting('menu')) { if (menuSearch.value) { menuSearch.value = ''; buildList(''); } menuSearch.blur(); searchClose(); }
+  });
+  // left empty, the field turns back into the Search row
+  menuSearch.addEventListener('blur', function () { if (setting('menu') && !menuSearch.value.trim()) searchClose(); });
+  menuDlButton.addEventListener('click', function () { menuDlOpen(!menuDl.classList.contains('m2-open')); });
+  document.addEventListener('click', function (e) {
+    if (!menuDl.contains(e.target) || e.target.closest('#m2-menu-list a:not(.m2-bad)')) menuDlOpen(false);
+  });
+  // the menu holds what the download row holds, built from it: files, the images one by one, then the outside viewers
+  function fillMenu(dl) {
+    menuList.innerHTML = '';
+    var ext = false;
+    Array.prototype.forEach.call(dl.children, function (c) {
+      if (c.tagName === 'DETAILS') {
+        c.querySelectorAll('.m2-list a').forEach(function (a) {
+          var b = el('a', null, 'Image ' + a.textContent);
+          b.href = a.href; b.setAttribute('download', ''); b.insertAdjacentHTML('beforeend', DL_ICON);
+          menuList.appendChild(b);
+        });
+        return;
+      }
+      if (c.tagName !== 'A') return;
+      if (c.classList.contains('m2-ext') && !ext) { ext = true; if (menuList.children.length) menuList.appendChild(el('div', 'm2-sep')); }
+      var b = c.cloneNode(true);
+      b.className = c.classList.contains('m2-bad') ? 'm2-bad' : '';
+      if (b.className) b.addEventListener('click', function (e) { e.preventDefault(); });
+      menuList.appendChild(b);
+    });
+    menuDl.style.display = menuList.children.length ? '' : 'none';
+  }
 
   document.addEventListener('click', function (e) {
     document.querySelectorAll('#m2-downloads details[open]').forEach(function (d) {
@@ -583,8 +768,12 @@ html .m2-ctrl button:hover { background: var(--m2-accent); border-color: var(--m
   function setting(name) { return getComputedStyle(document.documentElement).getPropertyValue('--m2-' + name).trim() === '1'; }
   view.addEventListener('wheel', function (e) {
     if (e.target.closest('.m2-info')) return; // the panel over the map scrolls
-    e.preventDefault();
     var r = view.getBoundingClientRect();
+    // a map window taller than the browser window (dragged past the bottom edge): the wheel scrolls the page, as the
+    // map covers most of it and the page froze (user, 2026-11-11); Ctrl or Cmd with the wheel, a pinch on a trackpad
+    // (sent as the wheel with Ctrl) and the zoom buttons still zoom
+    if (!e.ctrlKey && !e.metaKey && r.height > window.innerHeight + 1) return;
+    e.preventDefault();
     zoomAt(z * Math.exp(-e.deltaY * (e.deltaMode ? 0.05 : 0.0015)), (e.clientX - r.left) / pz(), (e.clientY - r.top) / pz());
   }, { passive: false });
   view.addEventListener('dblclick', function (e) {
@@ -650,21 +839,21 @@ html .m2-ctrl button:hover { background: var(--m2-accent); border-color: var(--m
   // header above (2026-11-06). The separator under it (user, 2026-11-09, in place of the grip in its corner) sets
   // another height, kept in this browser; a double click on it gives the page's height back
   var autoH = null; // the room under it: the setting --m2-below-view (56 px), read each time so a style can change it
-  var heightKey = 'atlas-view-height:' + location.pathname, userH = null;
-  try { userH = parseFloat(localStorage.getItem(heightKey)) || null; } catch (e) {}
+  // with the menu (--m2-menu) a height of its own, so a height dragged without it never keeps the room under the map the
+  // menu frees (user, 2026-11-10: "use the space at the bottom")
+  var heightKey = null, userH = null;
   function viewHeight() {
+    var k = 'atlas-view-height:' + (setting('menu') ? 'menu:' : '') + location.pathname;
+    if (k !== heightKey) { heightKey = k; userH = null; try { userH = parseFloat(localStorage.getItem(k)) || null; } catch (e) {} }
     if (!setting('separators')) {
       if (autoH !== null && view.style.height !== autoH) return; // resized by the reader with the grip in the corner
     }
     var ROW = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--m2-below-view')) || 56;
-    var top = (view.getBoundingClientRect().top + window.scrollY) / pz(), room = window.innerHeight / pz() - top;
-    // dragged down past the middle of the download row, the map goes to the screen's bottom edge with only the
-    // separator under it, the row out of sight; a click on the separator brings it back (user, 2026-11-09: as the
-    // list and the panel go to their edges)
-    var gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--m2-split-h')) || 14;
-    var shut = !!(userH && setting('separators') && setting('separator-below') && userH > room - (ROW + gap) / 2);
-    view.closest('.m2').classList.toggle('m2-below-shut', shut);
-    if (userH && setting('separators') && setting('separator-below')) { autoH = view.style.height = Math.round(shut ? room - gap : Math.max(300, Math.min(userH, room - ROW))) + 'px'; return; }
+    var top = (view.getBoundingClientRect().top + window.scrollY) / pz();
+    // the height dragged by the reader, from 300 px up to twice the window's height, the page scrolling; nothing under
+    // the map is hidden, the download row, the title and the text follow it (user, 2026-11-11: "it simply increases
+    // the size of the window"; until then the row, title and text went out of sight at the bottom edge, 2026-11-09)
+    if (userH && setting('separators') && setting('separator-below')) { autoH = view.style.height = Math.round(Math.max(300, Math.min(userH, 2 * window.innerHeight / pz()))) + 'px'; return; }
     autoH = Math.round(Math.max(300, window.innerHeight / pz() - top - ROW)) + 'px';
     view.style.height = autoH;
   }
@@ -673,25 +862,40 @@ html .m2-ctrl button:hover { background: var(--m2-accent); border-color: var(--m
   (function () {
     var hs = document.createElement('div'), grip = document.createElement('div'), drag = null;
     hs.id = 'm2-split-h'; hs.appendChild(grip);
-    grip.title = 'Drag to change the height of the map window, down to the bottom edge; a click brings the buttons back, a double click the usual height';
+    grip.title = 'Drag to change the height of the map window; it stops at the bottom of the window: scroll the page a little and drag again to go further; a double click gives the usual height';
     view.parentNode.insertBefore(hs, view.nextSibling);
+    // only the reader's own moves change the height (user, 2026-11-11: "only when you move, it moves"; the growing on by
+    // itself past the window's bottom edge, of the same day, removed): the lower edge follows the pointer's place on the
+    // page, up to twice the window's height
     grip.addEventListener('pointerdown', function (e) {
       if (e.button !== 0) return;
       e.preventDefault(); grip.setPointerCapture(e.pointerId);
-      drag = { y: e.clientY, h: view.getBoundingClientRect().height / pz(), moved: false };
+      var r = view.getBoundingClientRect();
+      // the window's bottom edge on the page, kept for this drag when the map ends above it (the snap, below)
+      drag = { y: e.clientY + window.scrollY, h: r.height / pz(), moved: false, cy: e.clientY,
+        edge: r.bottom < window.innerHeight - 1 ? (window.innerHeight + window.scrollY - r.top - window.scrollY) / pz() : null };
     });
+    // the snap (user, 2026-11-11: "snap at the end of the screen, and then you can still move down"): a map that ends
+    // above the window's bottom edge, dragged down, stops on that edge (taken from 20 px before it, user 2026-11-11; was 16) for this drag; the
+    // download row, title and text stay under it, a scroll away. To go further the reader scrolls the page a little and
+    // drags again: a map that already reaches the edge follows the pointer freely
+    function follow() {
+      userH = drag.h + (drag.cy + window.scrollY - drag.y) / pz();
+      if (drag.edge !== null && userH > drag.edge - 20 / pz()) userH = drag.edge;
+      viewHeight();
+    }
     grip.addEventListener('pointermove', function (e) {
       if (!drag) return;
-      var dy = (e.clientY - drag.y) / pz();
+      drag.cy = e.clientY;
+      var dy = (e.clientY + window.scrollY - drag.y) / pz();
       if (!drag.moved && Math.abs(dy) < 3) return;
       if (!drag.moved) { drag.moved = true; document.body.classList.add('m2-splitting-h'); }
-      userH = drag.h + dy; viewHeight();
+      follow();
     });
+    window.addEventListener('scroll', function () { if (drag && drag.moved) follow(); }, { passive: true });
     function end() {
       if (!drag) return;
-      var shut = view.closest('.m2').classList.contains('m2-below-shut');
-      if (drag.moved) { userH = shut ? 1e6 : view.getBoundingClientRect().height / pz(); try { localStorage.setItem(heightKey, Math.round(userH)); } catch (e) {} }
-      else if (shut) { userH = null; try { localStorage.removeItem(heightKey); } catch (e) {} viewHeight(); }
+      if (drag.moved) { userH = view.getBoundingClientRect().height / pz(); try { localStorage.setItem(heightKey, Math.round(userH)); } catch (e) {} }
       drag = null; document.body.classList.remove('m2-splitting-h');
     }
     grip.addEventListener('pointerup', end); grip.addEventListener('pointercancel', end);
@@ -806,6 +1010,9 @@ html .m2-ctrl button:hover { background: var(--m2-accent); border-color: var(--m
   // smallest box under the pointer (a protein rather than its complex).
   var info = document.getElementById('m2-info'), pin = document.getElementById('m2-pin');
   var nodes = null, sel = null, member = -1; // member: the family member shown, -1 for the cards
+  // set by the separator beside the panel: brings a panel the reader dragged out of sight back, so a click on an
+  // item of the map shows its annotation even then (user, 2026-11-10)
+  var reopenInfo = function () {};
   var KIND = { Macromolecule: 'Protein', SimpleChemical: 'Simple molecule', NucleicAcidFeature: 'Gene', Complex: 'Complex',
     Process: 'Process', OmittedProcess: 'Omitted process', UncertainProcess: 'Uncertain process', Association: 'Association', Dissociation: 'Dissociation' };
   var LINK = {
@@ -866,11 +1073,18 @@ html .m2-ctrl button:hover { background: var(--m2-accent); border-color: var(--m
       rs.style.top = (i.top - g.top) / z + 'px';
       rs.style.height = Math.max(i.bottom, dl.bottom, v.bottom) / z - i.top / z + 'px';
     }
+    // the panel's width as it stands: the open panel measured, its column read while it is kept empty (an empty panel
+    // measures 0, which read as shut: dragged shut and pulled back, it snapped shut again, user 2026-11-10)
+    function width() {
+      if (info.childNodes.length) return info.getBoundingClientRect().width / pz();
+      return parseFloat(getComputedStyle(grid).getPropertyValue('--m2-info-w')) || parseFloat(getComputedStyle(info).width) || 240;
+    }
     try { var saved = localStorage.getItem(key); if (saved !== null && parseFloat(saved) >= 0) setW(parseFloat(saved), false); } catch (e) {}
+    reopenInfo = function () { if (shut && info.childNodes.length) setW(lastW, true); };
     rs.addEventListener('pointerdown', function (e) {
       if (e.button !== 0) return;
       e.preventDefault(); rs.setPointerCapture(e.pointerId);
-      drag = { x: e.clientX, w: shut ? 0 : info.getBoundingClientRect().width / pz(), moved: false };
+      drag = { x: e.clientX, w: shut ? 0 : width(), moved: false };
     });
     rs.addEventListener('pointermove', function (e) {
       if (!drag) return;
@@ -881,7 +1095,7 @@ html .m2-ctrl button:hover { background: var(--m2-accent); border-color: var(--m
     });
     function end() {
       if (!drag) return;
-      if (drag.moved) { var was = drag.w; setW(shut ? 0 : info.getBoundingClientRect().width / pz(), true); if (shut && was >= 60) lastW = was; }
+      if (drag.moved) { var was = drag.w; setW(shut ? 0 : width(), true); if (shut && was >= 60) lastW = was; }
       else if (shut) setW(lastW, true); // a click on the separator of a panel out of sight
       drag = null; document.body.classList.remove('m2-splitting');
     }
@@ -939,6 +1153,7 @@ html .m2-ctrl button:hover { background: var(--m2-accent); border-color: var(--m
     sel = setting('click-closes') && best === sel ? null : best; // with --m2-click-closes a second click unselects (user, 2026-11-09)
     member = -1;
     renderInfo();
+    if (sel) reopenInfo();
     drawPin();
   }
   function closeInfo() { sel = null; renderInfo(); drawPin(); }
@@ -956,6 +1171,7 @@ html .m2-ctrl button:hover { background: var(--m2-accent); border-color: var(--m
     ty = view.clientHeight / 2 - (b[1] + b[3] / 2) / k * z;
     moved = true;
     renderInfo();
+    reopenInfo();
     draw();
   }
   // Esc closes the annotation too; in a family member's record it first returns to the cards
@@ -1532,6 +1748,7 @@ html .m2-ctrl button:hover { background: var(--m2-accent); border-color: var(--m
       a.insertAdjacentHTML('beforeend', EXT_ICON);
       dl.appendChild(a);
     });
+    fillMenu(dl);
     var source = textOf(m), box = document.getElementById('m2-text');
     box.innerHTML = '';
     if (source) get(source.data + ver(source)).then(function (d) { if (current === m && d) box.innerHTML = d.html; });
